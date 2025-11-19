@@ -5,10 +5,7 @@ from chromadb import PersistentClient
 
 from editerra_racag.chunking.normalize import normalize_chunk
 from editerra_racag.embedding.embedder import embed_chunk as embed_document
-
-CHROMA_PATH = "racag/db/chroma_store"
-COLLECTION_NAME = "kairos_chunks"
-CHUNKS_FILE = "racag/output/chunks.jsonl"
+from editerra_racag.paths import resolve_db_path, resolve_collection_name, resolve_output_path
 EXPECTED_EMBEDDING_DIM = 1536
 
 
@@ -60,17 +57,26 @@ def _extract_embedding_dim(sample: Dict[str, Any]) -> int:
     return 0
 
 
-def embed_all_chunks(chunks: List[Dict[str, Any]], reset: bool = False) -> None:
-    client = PersistentClient(path=CHROMA_PATH)
+def embed_all_chunks(
+    chunks: List[Dict[str, Any]], 
+    reset: bool = False,
+    db_path: str = None,
+    collection_name: str = None
+) -> None:
+    """Legacy function - use embed_and_store_all instead."""
+    db_path = db_path or resolve_db_path()
+    collection_name = collection_name or resolve_collection_name()
+    
+    client = PersistentClient(path=db_path)
 
     if reset:
         try:
-            client.delete_collection(name=COLLECTION_NAME)
+            client.delete_collection(name=collection_name)
             print("🧹 Existing collection dropped (reset requested).")
         except Exception:
             print("ℹ️ No existing collection to drop.")
 
-    collection = client.get_or_create_collection(name=COLLECTION_NAME)
+    collection = client.get_or_create_collection(name=collection_name)
 
     existing_ids: Set[str] = set()
 
@@ -136,6 +142,70 @@ def embed_all_chunks(chunks: List[Dict[str, Any]], reset: bool = False) -> None:
     final_count = collection.count()
     print("🎉 Embedding run complete.")
     print(f"📦 Collection now holds {final_count} embeddings.")
+
+
+def embed_and_store_all(
+    chunks_file: str,
+    db_path: str,
+    collection_name: str,
+    llm_provider,
+    batch_size: int = 100
+) -> Dict[str, int]:
+    """
+    Main entry point for embedding pipeline (used by EditerraEngine).
+    
+    Args:
+        chunks_file: Path to chunks.jsonl file
+        db_path: Path to ChromaDB storage
+        collection_name: Name of the collection
+        llm_provider: LLM provider for embeddings
+        batch_size: Batch size for embedding
+    
+    Returns:
+        Statistics about the embedding operation
+    """
+    from pathlib import Path
+    import json
+    
+    # Load chunks from file
+    chunks = []
+    with open(chunks_file, "r", encoding="utf-8") as f:
+        for line in f:
+            if line.strip():
+                chunks.append(json.loads(line))
+    
+    # Embed using the llm_provider
+    client = PersistentClient(path=db_path)
+    collection = client.get_or_create_collection(name=collection_name)
+    
+    embedded_count = 0
+    for i in range(0, len(chunks), batch_size):
+        batch = chunks[i:i+batch_size]
+        texts = [chunk.get("content", "") for chunk in batch]
+        
+        # Get embeddings from provider
+        embeddings = llm_provider.embed(texts)
+        
+        # Prepare for storage
+        ids = [chunk.get("id", f"chunk_{i+j}") for j, chunk in enumerate(batch)]
+        metadatas = [build_metadata(chunk) for chunk in batch]
+        documents = texts
+        
+        # Store in ChromaDB
+        collection.add(
+            ids=ids,
+            embeddings=embeddings,
+            metadatas=metadatas,
+            documents=documents
+        )
+        
+        embedded_count += len(batch)
+    
+    return {
+        "total_embedded": embedded_count,
+        "collection": collection_name,
+        "db_path": db_path
+    }
 
 
 if __name__ == "__main__":

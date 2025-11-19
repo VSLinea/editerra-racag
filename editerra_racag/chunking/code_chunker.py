@@ -2,9 +2,10 @@ from tree_sitter import Language, Parser
 from pathlib import Path
 from typing import List, Dict
 import ctypes
+from editerra_racag.paths import get_tree_sitter_lib_path
 
 # Load precompiled Swift language library (tree-sitter 0.25+ API)
-SWIFT_LANGUAGE_LIB = "racag/tree_sitter_languages/build/my-languages.so"
+SWIFT_LANGUAGE_LIB = str(get_tree_sitter_lib_path())
 
 # Load the shared library
 lib = ctypes.CDLL(SWIFT_LANGUAGE_LIB)

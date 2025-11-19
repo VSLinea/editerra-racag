@@ -2,9 +2,68 @@ import math
 from typing import List, Dict
 from chromadb import PersistentClient
 
-# Connect to the same Chroma store used by embed_and_store
-chroma_client = PersistentClient(path="racag/db/chroma_store")
-collection = chroma_client.get_or_create_collection(name="kairos_chunks")
+class SemanticRetriever:
+    """Semantic search using ChromaDB."""
+    
+    def __init__(self, db_path: str, collection_name: str, llm_provider=None):
+        self.db_path = db_path
+        self.collection_name = collection_name
+        self.llm_provider = llm_provider
+        self.client = PersistentClient(path=db_path)
+        self.collection = self.client.get_or_create_collection(name=collection_name)
+    
+    def retrieve(self, query: str, top_k: int = 5) -> List[Dict]:
+        """
+        Retrieve relevant chunks for a query.
+        
+        Args:
+            query: Natural language query
+            top_k: Number of results to return
+        
+        Returns:
+            List of relevant chunks with metadata
+        """
+        # Embed the query
+        query_embedding = self.llm_provider.embed_single(query)
+        
+        # Search in ChromaDB
+        results = self.collection.query(
+            query_embeddings=[query_embedding],
+            n_results=top_k
+        )
+        
+        # Format results
+        chunks = []
+        if results and results['ids']:
+            for i in range(len(results['ids'][0])):
+                chunk = {
+                    'id': results['ids'][0][i],
+                    'content': results['documents'][0][i],
+                    'score': 1.0 - results['distances'][0][i],  # Convert distance to similarity
+                    'metadata': results['metadatas'][0][i] if results['metadatas'] else {}
+                }
+                # Extract common fields from metadata
+                metadata = chunk['metadata']
+                chunk['file_path'] = metadata.get('file_path', 'unknown')
+                chunk['start_line'] = int(metadata.get('lines', '0-0').split('-')[0])
+                chunk['end_line'] = int(metadata.get('lines', '0-0').split('-')[1])
+                chunks.append(chunk)
+        
+        return chunks
+
+# Legacy global instances for backward compatibility
+_default_client = None
+_default_collection = None
+
+def _get_default_collection():
+    global _default_client, _default_collection
+    if _default_client is None:
+        from editerra_racag.paths import resolve_db_path, resolve_collection_name
+        _default_client = PersistentClient(path=resolve_db_path())
+        _default_collection = _default_client.get_or_create_collection(name=resolve_collection_name())
+    return _default_collection
+
+collection = property(lambda self: _get_default_collection())
 
 # ---------- BASIC COSINE SIMILARITY ----------
 def cosine_similarity(a: List[float], b: List[float]) -> float:

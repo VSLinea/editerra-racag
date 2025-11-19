@@ -145,10 +145,11 @@ def run_chunkers(repo_root: Path):
 
 # ============================================================
 
-def save_outputs(chunks, errors):
+def save_outputs(chunks, errors, out_dir: Path = None):
     chunks = [c for c in chunks if c is not None]
 
-    out_dir = Path("racag/output")
+    if out_dir is None:
+        out_dir = Path(".editerra-racag/output")
     out_dir.mkdir(parents=True, exist_ok=True)
 
     # Save chunks.jsonl
@@ -186,6 +187,31 @@ def save_outputs(chunks, errors):
 
 
 # ============================================================
+
+def run_chunking_pipeline(workspace_root: str, output_dir: str) -> dict:
+    """
+    Main entry point for chunking pipeline (used by EditerraEngine).
+    
+    Args:
+        workspace_root: Path to workspace root
+        output_dir: Path to output directory
+    
+    Returns:
+        Statistics about chunking operation
+    """
+    repo = Path(workspace_root)
+    out_dir = Path(output_dir)
+    
+    chunks, errors = run_chunkers(repo)
+    save_outputs(chunks, errors, out_dir)
+    
+    # Return stats
+    return {
+        "total_chunks": len(chunks),
+        "errors": len(errors),
+        "output_dir": str(out_dir)
+    }
+
 
 if __name__ == "__main__":
     repo = Path(__file__).resolve().parents[2]
