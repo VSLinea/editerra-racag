@@ -3,8 +3,8 @@
 import argparse
 import json
 
-from racag.context.context_assembler import context_to_markdown
-from racag.query.query_engine import query_engine
+from editerra_racag.context.context_assembler import context_to_markdown
+from editerra_racag.query.query_engine import query_engine
 
 
 def main() -> None:

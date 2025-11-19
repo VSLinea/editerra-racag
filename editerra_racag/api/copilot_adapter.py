@@ -2,8 +2,8 @@
 
 from fastapi import APIRouter
 from pydantic import BaseModel
-from racag.query import query_racag
-from racag.context.context_assembler import context_to_markdown
+from editerra_racag.query import query_racag
+from editerra_racag.context.context_assembler import context_to_markdown
 
 router = APIRouter()
 

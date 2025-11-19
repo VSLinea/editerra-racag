@@ -12,7 +12,7 @@ Copilot, VS Code models, Kairos iOS adapters, etc.
 
 from __future__ import annotations
 import sys
-from racag.runtime.racag_runtime import run_racag
+from editerra_racag.runtime.racag_runtime import run_racag
 
 
 def main():

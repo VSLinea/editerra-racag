@@ -2,7 +2,7 @@ from __future__ import annotations
 
 from typing import List
 
-from racag.reranker import model_loader as ml
+from editerra_racag.reranker import model_loader as ml
 
 
 def embed_query(text: str) -> List[float]:

@@ -2,10 +2,10 @@ import json
 import time
 from pathlib import Path
 
-from racag.chunking.code_chunker import extract_code_chunks
-from racag.chunking.markdown_chunker import chunk_markdown
-from racag.chunking.json_chunker import chunk_json
-from racag.chunking.normalize import normalize_chunk
+from editerra_racag.chunking.code_chunker import extract_code_chunks
+from editerra_racag.chunking.markdown_chunker import chunk_markdown
+from editerra_racag.chunking.json_chunker import chunk_json
+from editerra_racag.chunking.normalize import normalize_chunk
 
 # ============================================================
 # OPTION B — SMART PROJECT‑LEVEL FILTER

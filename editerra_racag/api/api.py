@@ -6,7 +6,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 import uvicorn
 
-from racag.query import query_racag
+from editerra_racag.query import query_racag
 
 # ---------------
 # FastAPI service

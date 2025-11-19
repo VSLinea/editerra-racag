@@ -1,5 +1,5 @@
 import hashlib
-from racag.embedding.prompt_formatter import (
+from editerra_racag.embedding.prompt_formatter import (
     build_metadata,
     build_record
 )

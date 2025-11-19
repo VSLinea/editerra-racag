@@ -9,7 +9,7 @@ import logging
 import sys
 from typing import Any
 
-from racag.runtime.racag_runtime import run_racag
+from editerra_racag.runtime.racag_runtime import run_racag
 
 
 def _disable_verbose_logging() -> None:

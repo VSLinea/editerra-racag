@@ -1,10 +1,10 @@
 # racag/api/server.py
 
-from racag.telemetry.noop_tracing import disable_tracing
+from editerra_racag.telemetry.noop_tracing import disable_tracing
 disable_tracing()
 
 from fastapi import FastAPI
-from racag.api.copilot_adapter import router as copilot_router
+from editerra_racag.api.copilot_adapter import router as copilot_router
 
 app = FastAPI(title="RACAG API", version="0.1")
 

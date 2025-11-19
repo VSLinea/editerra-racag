@@ -3,8 +3,8 @@ from typing import Any, Dict, List, Set
 
 from chromadb import PersistentClient
 
-from racag.chunking.normalize import normalize_chunk
-from racag.embedding.embedder import embed_chunk as embed_document
+from editerra_racag.chunking.normalize import normalize_chunk
+from editerra_racag.embedding.embedder import embed_chunk as embed_document
 
 CHROMA_PATH = "racag/db/chroma_store"
 COLLECTION_NAME = "kairos_chunks"
@@ -44,7 +44,7 @@ def build_metadata(chunk: Dict[str, Any]) -> Dict[str, Any]:
 
 def _extract_embedding_dim(sample: Dict[str, Any]) -> int:
     embeddings = sample.get("embeddings")
-    if not embeddings:
+    if embeddings is None or (isinstance(embeddings, (list, tuple)) and len(embeddings) == 0):
         return 0
 
     first = embeddings[0]

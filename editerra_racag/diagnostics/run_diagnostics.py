@@ -1,9 +1,9 @@
 import sys
 from pathlib import Path
 
-from racag.diagnostics.scanner import scan_repo
-from racag.diagnostics.json_report import write_json_report
-from racag.diagnostics.html_report import write_html_report
+from editerra_racag.diagnostics.scanner import scan_repo
+from editerra_racag.diagnostics.json_report import write_json_report
+from editerra_racag.diagnostics.html_report import write_html_report
 
 def main():
     repo = Path(__file__).resolve().parents[2]

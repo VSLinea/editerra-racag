@@ -1,9 +1,9 @@
 # racag/query.py
 
 import json
-from racag.retrieval.query_embedder import embed_query
-from racag.retrieval.semantic_retriever import semantic_search
-from racag.context.context_assembler import assemble_context
+from editerra_racag.retrieval.query_embedder import embed_query
+from editerra_racag.retrieval.semantic_retriever import semantic_search
+from editerra_racag.context.context_assembler import assemble_context
 from datetime import datetime
 
 def query_racag(text: str, top_k: int = 5):

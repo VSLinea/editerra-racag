@@ -18,7 +18,7 @@ can consume safely and consistently.
 from __future__ import annotations
 from typing import Dict, Any
 
-from racag.runtime.racag_runtime import run_racag
+from editerra_racag.runtime.racag_runtime import run_racag
 
 
 def build_backend_response(

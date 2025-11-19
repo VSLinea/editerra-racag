@@ -4,8 +4,8 @@ import json
 import threading
 import queue
 
-from racag.watcher.file_watcher import SwiftWatcherThread
-from racag.embedding.chunk_embedder import embed_chunk
+from editerra_racag.watcher.file_watcher import SwiftWatcherThread
+from editerra_racag.embedding.chunk_embedder import embed_chunk
 
 PROMPTS_DIR = "racag/logs/prompts"
 EMBEDDINGS_DIR = "racag/logs/embeddings"

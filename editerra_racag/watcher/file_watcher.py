@@ -5,8 +5,8 @@ from threading import Thread
 from watchdog.observers import Observer
 from watchdog.events import FileSystemEventHandler
 
-from racag.chunking.code_chunker import extract_code_chunks
-from racag.embedding.prompt_formatter import format_chunk_as_prompt
+from editerra_racag.chunking.code_chunker import extract_code_chunks
+from editerra_racag.embedding.prompt_formatter import format_chunk_as_prompt
 
 
 WATCH_DIRECTORY = "/Users/lyra/KairosMain/ios/KairosAmiqo"

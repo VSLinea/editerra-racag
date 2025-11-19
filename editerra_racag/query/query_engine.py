@@ -20,8 +20,8 @@ from typing import List, Dict, Any
 import chromadb
 from chromadb.config import Settings
 
-from racag.reranker.rerank_engine import rerank_results
-from racag.reranker import model_loader as ml
+from editerra_racag.reranker.rerank_engine import rerank_results
+from editerra_racag.reranker import model_loader as ml
 
 import logging
 import sys

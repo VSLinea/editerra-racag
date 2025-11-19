@@ -10,6 +10,23 @@
 
 **Editerra RAC-CAG** (Retrieval-Augmented Context-Aware Generator) is a sophisticated code intelligence engine that helps AI understand your entire codebase - not just the files you have open.
 
+## ⚡ Installation (One Command!)
+
+```bash
+# Install everything automatically
+pip install editerra-racag
+```
+
+**That's it!** All dependencies auto-install:
+- ✅ Vector database (ChromaDB)
+- ✅ LLM clients (OpenAI, Ollama)
+- ✅ Code parsers (tree-sitter)
+- ✅ API server (FastAPI)
+- ✅ CLI tools
+- ✅ ~20 Python packages
+
+**No Docker. No complex setup. No manual configuration.**
+
 ### Key Features
 
 - 🧠 **Deep Codebase Understanding** - Vectorizes your entire project using advanced chunking

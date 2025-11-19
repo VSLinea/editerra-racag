@@ -8,9 +8,12 @@ Command-line interface for Editerra RAC-CAG.
 import click
 from pathlib import Path
 import sys
+import json
 
 from editerra_racag import __version__
 from editerra_racag.config import init_config, get_config
+from editerra_racag.engine import EditerraEngine
+from editerra_racag.llm.factory import get_available_providers
 
 
 @click.group()
@@ -98,12 +101,25 @@ def index(workspace: Path):
         click.echo(f"💾 Database: {config.db_path}")
         click.echo()
         
-        # TODO: Implement actual indexing
-        click.echo("⚠️  Indexing not yet implemented in this alpha version")
-        click.echo("Coming soon in next release!")
+        # Initialize engine
+        engine = EditerraEngine(workspace, config)
+        
+        # Run indexing
+        click.echo("⚙️  Starting indexing pipeline...")
+        stats = engine.index()
+        
+        # Display results
+        click.echo()
+        click.echo("✅ Indexing complete!")
+        click.echo()
+        click.echo(f"📦 Total chunks: {stats.get('chunking', {}).get('total_chunks', 0)}")
+        click.echo(f"🔢 Total embeddings: {stats.get('embedding', {}).get('total_embedded', 0)}")
+        click.echo(f"💾 Collection: {stats['collection']}")
         
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -136,13 +152,32 @@ def query(query_text, workspace: Path, top_k: int):
     
     try:
         config = get_config(workspace)
+        engine = EditerraEngine(workspace, config)
         
-        # TODO: Implement actual querying
-        click.echo("⚠️  Querying not yet implemented in this alpha version")
-        click.echo("Coming soon in next release!")
+        # Execute query
+        results = engine.query(query_str, top_k=top_k)
+        
+        if not results:
+            click.echo("❌ No results found")
+            return
+        
+        # Display results
+        click.echo(f"✅ Found {len(results)} relevant chunks:")
+        click.echo()
+        
+        for i, result in enumerate(results, 1):
+            click.echo(f"─── Result {i} ───")
+            click.echo(f"📄 File: {result.get('file_path', 'Unknown')}")
+            click.echo(f"📍 Lines: {result.get('start_line', '?')}-{result.get('end_line', '?')}")
+            click.echo(f"🎯 Score: {result.get('score', 0):.3f}")
+            click.echo()
+            click.echo(result.get('content', ''))
+            click.echo()
         
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -165,14 +200,24 @@ def stats(workspace: Path):
     
     try:
         config = get_config(workspace)
+        engine = EditerraEngine(workspace, config)
         
-        click.echo(f"Project: {config.project_name}")
-        click.echo(f"Collection: {config.collection_name}")
-        click.echo(f"Database: {config.db_path}")
+        stats = engine.get_stats()
+        
+        click.echo(f"📝 Project: {config.project_name}")
+        click.echo(f"📦 Collection: {stats['collection']}")
+        click.echo(f"🤖 Provider: {stats['provider']}")
+        click.echo(f"💾 Database: {stats['db_path']}")
+        click.echo(f"🔢 Total chunks: {stats.get('total_chunks', 0)}")
         click.echo()
         
-        # TODO: Implement actual stats
-        click.echo("⚠️  Stats not yet implemented in this alpha version")
+        if 'last_index' in stats:
+            last = stats['last_index']
+            click.echo("Last indexing:")
+            chunk_stats = last.get('chunking', {})
+            embed_stats = last.get('embedding', {})
+            click.echo(f"  • Chunks created: {chunk_stats.get('total_chunks', 0)}")
+            click.echo(f"  • Embeddings: {embed_stats.get('total_embedded', 0)}")
         
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
@@ -196,11 +241,29 @@ def watch(workspace: Path):
     click.echo()
     
     try:
-        # TODO: Implement file watching
-        click.echo("⚠️  Watch mode not yet implemented in this alpha version")
+        config = get_config(workspace)
         
+        from editerra_racag.watcher.file_watcher import FileWatcher
+        
+        # Initialize watcher
+        watcher = FileWatcher(
+            workspace_root=str(workspace),
+            config=config
+        )
+        
+        click.echo(f"✅ Watcher initialized")
+        click.echo(f"📁 Monitoring: {workspace}")
+        click.echo()
+        
+        # Start watching
+        watcher.start()
+        
+    except KeyboardInterrupt:
+        click.echo("\n⏹️  Stopping watcher...")
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -230,11 +293,24 @@ def serve(workspace: Path, port: int):
     click.echo()
     
     try:
-        # TODO: Implement API server
-        click.echo("⚠️  API server not yet implemented in this alpha version")
+        import uvicorn
+        from editerra_racag.api.server import create_app
+        
+        # Create FastAPI app with workspace context
+        app = create_app(workspace)
+        
+        click.echo(f"✅ Server starting...")
+        click.echo(f"📍 URL: http://localhost:{port}")
+        click.echo(f"📄 Docs: http://localhost:{port}/docs")
+        click.echo()
+        
+        # Start server
+        uvicorn.run(app, host="0.0.0.0", port=port)
         
     except Exception as e:
         click.echo(f"❌ Error: {e}", err=True)
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
 
 
@@ -246,9 +322,12 @@ def providers():
     click.echo("🤖 Available LLM Providers:")
     click.echo()
     
+    # Get dynamically available providers
+    available = get_available_providers()
+    
     providers_list = [
-        ("openai", "OpenAI", "✅ Ready", "Requires API key"),
-        ("ollama", "Ollama (Local)", "✅ Ready", "Free, requires Ollama installation"),
+        ("openai", "OpenAI", "✅ Ready" if "openai" in available else "❌ Not available", "Requires API key"),
+        ("ollama", "Ollama (Local)", "✅ Ready" if "ollama" in available else "❌ Not available", "Free, requires Ollama installation"),
         ("anthropic", "Anthropic Claude", "🚧 Coming Soon", "Requires API key"),
         ("azure", "Azure OpenAI", "🚧 Coming Soon", "Enterprise"),
         ("vertex", "Google Vertex AI", "🚧 Coming Soon", "Requires GCP"),

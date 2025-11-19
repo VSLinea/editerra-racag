@@ -2,8 +2,8 @@ import os
 import json
 from datetime import datetime
 
-from racag.embedding.chunk_embedder import embed_chunk
-from racag.embedding.prompt_formatter import build_metadata
+from editerra_racag.embedding.chunk_embedder import embed_chunk
+from editerra_racag.embedding.prompt_formatter import build_metadata
 
 # Path to the chunk prompts (produced by file_watcher)
 PROMPTS_DIR = "racag/logs/prompts"

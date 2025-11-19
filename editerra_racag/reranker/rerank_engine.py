@@ -15,11 +15,11 @@ Dependencies:
 from __future__ import annotations
 import logging
 from typing import List, Dict
-from racag.reranker.similarity import (
+from editerra_racag.reranker.similarity import (
     cosine_similarity_batch,
     hybrid_score,
 )
-from racag.reranker.model_loader import (
+from editerra_racag.reranker.model_loader import (
     get_rerank_client,
     get_rerank_model_name,
 )
