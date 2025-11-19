@@ -161,10 +161,10 @@ When you run `pip install editerra-racag`, these packages are automatically inst
 
 #### Core Dependencies
 ```
-chromadb>=0.4.0           # Vector database
+chromadb==0.4.24          # Vector database (pinned: 1.3.5+ has segfault issues)
 openai>=1.0.0             # OpenAI API client
 tiktoken>=0.5.0           # Token counting
-fastapi>=0.104.0          # API server
+fastapi>=0.104.0          # API framework
 uvicorn>=0.24.0           # ASGI server
 pydantic>=2.0.0           # Data validation
 python-dotenv>=1.0.0      # Environment variables
@@ -173,6 +173,7 @@ tree-sitter>=0.20.0       # Code parsing
 watchdog>=3.0.0           # File watching
 click>=8.0.0              # CLI framework
 rich>=13.0.0              # Terminal formatting
+numpy>=1.23.0,<2.0.0      # Array operations (NumPy 2.0 breaks ChromaDB 0.4.x)
 ```
 
 #### Optional Dependencies
@@ -397,13 +398,22 @@ ollama serve
 curl http://localhost:11434/api/tags
 ```
 
-### "ChromaDB errors"
+### "ChromaDB errors" or Segfault/Crash
+
+**Issue**: ChromaDB 1.3.5+ has known segfault issues with concurrent operations.
+
+**Solution**: We pin to ChromaDB 0.4.24 which is stable. If you still see issues:
 
 ```bash
+# Ensure correct versions are installed
+pip install "chromadb==0.4.24" "numpy<2.0.0"
+
 # Clear database and rebuild
 rm -rf .editerra-racag/db/
 editerra-racag index
 ```
+
+**Note**: NumPy 2.0 has breaking changes incompatible with ChromaDB 0.4.x. We explicitly require NumPy <2.0.0.
 
 ---
 
