@@ -1,0 +1,132 @@
+[build-system]
+requires = ["setuptools>=68.0", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "editerra-racag"
+version = "0.1.0"
+description = "AI-Powered Code Intelligence for Complex Projects"
+readme = "README.md"
+requires-python = ">=3.9"
+license = {text = "BSL-1.1"}
+authors = [
+    {name = "VSLinea", email = "support@editerra.io"}
+]
+maintainers = [
+    {name = "VSLinea", email = "support@editerra.io"}
+]
+keywords = [
+    "ai", "code-intelligence", "rag", "vector-database", 
+    "code-analysis", "llm", "copilot", "mcp"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+]
+
+dependencies = [
+    "chromadb>=0.4.0",
+    "openai>=1.0.0",
+    "tiktoken>=0.5.0",
+    "fastapi>=0.104.0",
+    "uvicorn[standard]>=0.24.0",
+    "pydantic>=2.0.0",
+    "python-dotenv>=1.0.0",
+    "PyYAML>=6.0",
+    "tree-sitter>=0.20.0",
+    "watchdog>=3.0.0",
+    "click>=8.0.0",
+    "rich>=13.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0.0",
+    "pytest-cov>=4.0.0",
+    "pytest-asyncio>=0.21.0",
+    "black>=23.0.0",
+    "ruff>=0.1.0",
+    "mypy>=1.0.0",
+    "pre-commit>=3.0.0",
+]
+
+anthropic = [
+    "anthropic>=0.18.0",
+]
+
+ollama = [
+    "ollama>=0.1.0",
+]
+
+cohere = [
+    "cohere>=4.0.0",
+]
+
+all = [
+    "anthropic>=0.18.0",
+    "ollama>=0.1.0",
+    "cohere>=4.0.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/VSLinea/editerra-racag"
+Documentation = "https://github.com/VSLinea/editerra-racag/tree/main/docs"
+Repository = "https://github.com/VSLinea/editerra-racag"
+Issues = "https://github.com/VSLinea/editerra-racag/issues"
+Changelog = "https://github.com/VSLinea/editerra-racag/blob/main/CHANGELOG.md"
+
+[project.scripts]
+editerra-racag = "editerra_racag.cli:main"
+editerra-racag-mcp = "editerra_racag.mcp_server:main"
+
+[tool.setuptools]
+packages = ["editerra_racag"]
+
+[tool.setuptools.package-data]
+editerra_racag = ["py.typed", "*.yaml", "tree_sitter_languages/**/*"]
+
+[tool.black]
+line-length = 100
+target-version = ['py39', 'py310', 'py311', 'py312']
+include = '\.pyi?$'
+
+[tool.ruff]
+line-length = 100
+target-version = "py39"
+select = ["E", "F", "I", "N", "W", "UP"]
+ignore = ["E501"]
+
+[tool.mypy]
+python_version = "3.9"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+ignore_missing_imports = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+addopts = "-v --cov=editerra_racag --cov-report=html --cov-report=term"
+
+[tool.coverage.run]
+source = ["editerra_racag"]
+omit = ["*/tests/*", "*/test_*.py"]
+
+[tool.coverage.report]
+exclude_lines = [
+    "pragma: no cover",
+    "def __repr__",
+    "raise AssertionError",
+    "raise NotImplementedError",
+    "if __name__ == .__main__.:",
+    "if TYPE_CHECKING:",
+]

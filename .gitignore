@@ -1,0 +1,71 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+racag_env/
+ENV/
+dist/
+build/
+*.egg-info/
+.pytest_cache/
+.mypy_cache/
+.tox/
+.coverage
+htmlcov/
+
+# Editerra RAC-CAG specific
+.editerra-racag/
+.racag/
+*.db
+*.sqlite
+*.sqlite3
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*.sublime-*
+
+# OS
+.DS_Store
+Thumbs.db
+.AppleDouble
+.LSOverride
+
+# Logs
+*.log
+logs/
+*.log.*
+
+# Node (for VS Code extension)
+node_modules/
+*.vsix
+out/
+.vscode-test/
+
+# Tree-sitter
+tree_sitter_languages/build/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Temporary
+tmp/
+temp/
+*.tmp
+*.swp
+
+# ChromaDB
+chroma_store/
+db/chroma_store/
+
+# Output
+output/
+*.jsonl
