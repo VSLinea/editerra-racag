@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "editerra-racag"
-version = "0.1.0"
+version = "0.2.0"
 description = "AI-Powered Code Intelligence for Complex Projects"
 readme = "README.md"
 requires-python = ">=3.9"
@@ -71,10 +71,15 @@ cohere = [
     "cohere>=4.0.0",
 ]
 
+mcp = [
+    "modelcontextprotocol[cli]>=1.2.0",
+]
+
 all = [
     "anthropic>=0.18.0",
     "ollama>=0.1.0",
     "cohere>=4.0.0",
+    "modelcontextprotocol[cli]>=1.2.0",
 ]
 
 [project.urls]

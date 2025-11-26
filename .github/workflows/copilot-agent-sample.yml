@@ -1,0 +1,62 @@
+name: Copilot MCP Bootstrap (Sample)
+
+on:
+  workflow_dispatch:
+    inputs:
+      reason:
+        description: "Why are you running the bootstrap (optional)?"
+        required: false
+
+jobs:
+  setup-racag-for-copilot:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install RACAG with MCP extras
+        run: |
+          python -m pip install --upgrade pip
+          pip install "editerra-racag[mcp]"
+
+      - name: Verify MCP entrypoints
+        run: |
+          editerra-racag --version
+          editerra-racag mcp-server --help
+
+      - name: Prepare Copilot artifacts
+        run: |
+          mkdir -p .github/copilot
+          cat <<'JSON' > .github/copilot/mcp.json
+          {
+            "mcpServers": {
+              "racag": {
+                "type": "local",
+                "command": "editerra-racag",
+                "args": [
+                  "mcp-server",
+                  "--workspace", "./",
+                  "--transport", "stdio",
+                  "--read-only"
+                ],
+                "tools": ["racag.query", "racag.superprompt"],
+                "env": {
+                  "OPENAI_API_KEY": "COPILOT_MCP_OPENAI_API_KEY",
+                  "RACAG_AUTH_TOKEN": "COPILOT_MCP_RACAG_AUTH_TOKEN"
+                }
+              }
+            }
+          }
+          JSON
+
+      - name: Upload MCP config artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: copilot-mcp-config
+          path: .github/copilot/mcp.json

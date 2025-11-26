@@ -5,6 +5,8 @@
 [![License: BSL 1.1](https://img.shields.io/badge/License-BSL%201.1-blue.svg)](LICENSE.md)
 [![Python Version](https://img.shields.io/badge/python-3.9%2B-blue)](https://python.org)
 [![Status](https://img.shields.io/badge/status-alpha-orange)](https://github.com/VSLinea/editerra-racag)
+[![PyPI](https://img.shields.io/pypi/v/editerra-racag?logo=pypi&logoColor=white)](https://pypi.org/project/editerra-racag/)
+[![GHCR](https://img.shields.io/badge/ghcr.io%2Fvslinea-editerra--racag--mcp-24292e?logo=github)](https://github.com/VSLinea/editerra-racag/pkgs/container/editerra-racag-mcp)
 
 ## 🚀 What is Editerra RAC-CAG?
 
@@ -81,6 +83,18 @@ editerra-racag watch
   }
 }
 ```
+
+## 📦 Releases
+
+- **PyPI:** `pip install editerra-racag` downloads the latest tagged wheel/SDist.
+- **Containers:** `docker pull ghcr.io/vslinea/editerra-racag-mcp:latest` (tags follow `v*` releases).
+- **Automation:** `.github/workflows/release.yml` builds, signs, and publishes artifacts whenever a tag like `v0.5.0` is pushed.
+- **Notes:** Capture highlights in `CHANGELOG.md` before promoting a tag so consumers can see what changed.
+
+**Tagging flow:**
+1. Update `pyproject.toml` + `CHANGELOG.md` and commit the changes.
+2. Push a dry-run tag such as `v0.5.0-rc1` to ensure the workflow can reach PyPI/GHCR with the right secrets.
+3. After verifying the pre-release, tag the final version (`git tag v0.5.0 && git push origin v0.5.0`).
 
 ## 🔥 Why Editerra RAC-CAG?
 
@@ -202,9 +216,9 @@ exclude_dirs:
 - [x] Business Source License
 - [ ] Multi-LLM provider abstraction
 - [ ] Configuration system refactoring
-- [ ] Python package (PyPI)
+- [x] Python package (PyPI)
 - [ ] VS Code extension
-- [ ] MCP server
+- [x] MCP server
 - [ ] Comprehensive documentation
 
 **Target Launch:** Early January 2026
